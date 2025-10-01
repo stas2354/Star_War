@@ -21,7 +21,6 @@
       <a href="./hierarchy.html">Иерархия</a>
       <a href="./charter.html">Устав</a>
       <a href="./rules.html">Правила</a>
-      <a href="./admin.html">Админ</a>
     </nav>
   </header>
 
@@ -33,19 +32,21 @@
   <footer class="site-footer">
     <p>© ВАР RP — неофициальный фан‑проект.</p>
   </footer>
-  <script type="module">
-  import { db } from './firebase-init.js';
-  import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-  const list = document.getElementById('news-list');
-  const q = query(collection(db, 'news'), orderBy('created_at', 'desc'));
-  onSnapshot(q, (snap)=>{
-    if (snap.empty) { list.innerHTML = '<p class="muted">Пока нет новостей.</p>'; return; }
-    list.innerHTML = Array.from(snap.docs).map(d=>{
-      const n = d.data();
-      const dt = n.created_at?.toDate ? n.created_at.toDate() : new Date();
-      return `<article class="card"><h3>${n.title}</h3><p class="muted">${dt.toLocaleString('ru-RU')}</p><p>${n.text}</p></article>`;
-    }).join('');
-  });
+  <script>
+  // Статический источник: gh-pages/news.json
+  fetch('./news.json', { cache: 'no-store' })
+    .then(r => r.json())
+    .then(items => {
+      const list = document.getElementById('news-list');
+      if (!Array.isArray(items) || !items.length) { list.innerHTML = '<p class="muted">Пока нет новостей.</p>'; return; }
+      list.innerHTML = items.map(n => {
+        const dt = n.date ? new Date(n.date) : new Date();
+        return `<article class="card"><h3>${n.title}</h3><p class="muted">${dt.toLocaleString('ru-RU')}</p><p>${n.text}</p></article>`;
+      }).join('');
+    })
+    .catch(() => {
+      document.getElementById('news-list').innerHTML = '<p class="muted">Ошибка загрузки новостей.</p>';
+    });
   </script>
   <script src="./script.js" defer></script>
 </body>

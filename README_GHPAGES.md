@@ -13,24 +13,14 @@
 
 Обновление новостей: откройте `admin.html`, добавьте новости — они сохраняются в `localStorage` браузера и видны на странице `news.html` на вашем устройстве.
 
-## Firebase (Auth + Firestore) для GitHub Pages
-1. Создайте проект Firebase и включите Auth (Email/Password) и Firestore.
-2. Скопируйте конфиг в `gh-pages/firebase-init.js` (замените PASTE_* значения).
-3. В Firestore создайте коллекцию `admins` и документ с id = UID вашего аккаунта (значение true), чтобы дать права админа.
-4. Правила Firestore (пример):
+## Новости без бэкенда
+Новости теперь берутся из файла `gh-pages/news.json`.
+- Чтобы добавить новость, отредактируйте `news.json` и закоммитьте изменения.
+- Формат элемента:
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /news/{id} {
-      allow read: if true;
-      allow create, update, delete: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-    match /admins/{uid} {
-      allow read: if request.auth != null;
-      allow write: if false; // управлять через консоль
-    }
-  }
+{
+  "title": "Заголовок",
+  "text": "Текст новости",
+  "date": "2025-10-01T12:00:00Z"
 }
 ```
-5. Вход/регистрация: `auth.html`. Защищённая админ‑страница: `admin.html`.
