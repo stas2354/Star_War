@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
       navToggle.setAttribute('aria-expanded', String(isOpen));
     });
   }
+
+  // reveal on scroll
+  const revealEls = document.querySelectorAll('.section, .card, .accordion details');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => {
+    el.classList.add('reveal');
+    io.observe(el);
+  });
 });
 
 
