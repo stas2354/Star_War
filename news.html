@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Новости — ВАР</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="./assets/logo.svg">
+</head>
+<body>
+  <header class="site-header">
+    <button class="nav-toggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+    <a class="brand" href="./index.html">
+      <img src="./assets/logo.svg" alt="ВАР" class="brand__logo">
+      <span class="brand__name">ВАР — Великая Армия Республики</span>
+    </a>
+    <nav class="site-nav" aria-label="Навигация">
+      <a href="./news.html" aria-current="page">Новости</a>
+      <a href="./creators.html">Создатели</a>
+      <a href="./hierarchy.html">Иерархия</a>
+      <a href="./charter.html">Устав</a>
+      <a href="./rules.html">Правила</a>
+      <a href="./admin.html">Админ</a>
+    </nav>
+  </header>
+
+  <main class="section">
+    <h1>Новости</h1>
+    <div id="news-list" class="cards"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© ВАР RP — неофициальный фан‑проект.</p>
+  </footer>
+  <script type="module">
+  import { db } from './firebase-init.js';
+  import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+  const list = document.getElementById('news-list');
+  const q = query(collection(db, 'news'), orderBy('created_at', 'desc'));
+  onSnapshot(q, (snap)=>{
+    if (snap.empty) { list.innerHTML = '<p class="muted">Пока нет новостей.</p>'; return; }
+    list.innerHTML = Array.from(snap.docs).map(d=>{
+      const n = d.data();
+      const dt = n.created_at?.toDate ? n.created_at.toDate() : new Date();
+      return `<article class="card"><h3>${n.title}</h3><p class="muted">${dt.toLocaleString('ru-RU')}</p><p>${n.text}</p></article>`;
+    }).join('');
+  });
+  </script>
+  <script src="./script.js" defer></script>
+</body>
+</html>
+
+

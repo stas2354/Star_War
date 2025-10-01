@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход — ВАР</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="./assets/logo.svg">
+</head>
+<body>
+  <header class="site-header">
+    <button class="nav-toggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+    <a class="brand" href="./index.html">
+      <img src="./assets/logo.svg" alt="ВАР" class="brand__logo">
+      <span class="brand__name">ВАР — Великая Армия Республики</span>
+    </a>
+    <nav class="site-nav" aria-label="Навигация">
+      <a href="./news.html">Новости</a>
+      <a href="./admin.html">Админ</a>
+    </nav>
+  </header>
+
+  <main class="section">
+    <h1>Вход / Регистрация</h1>
+    <div class="grid two">
+      <form id="login" class="apply">
+        <h3>Вход</h3>
+        <label>E‑mail<input id="login-email" type="email" required></label>
+        <label>Пароль<input id="login-pass" type="password" required></label>
+        <button type="submit">Войти</button>
+      </form>
+      <form id="register" class="apply">
+        <h3>Регистрация</h3>
+        <label>E‑mail<input id="reg-email" type="email" required></label>
+        <label>Пароль<input id="reg-pass" type="password" required></label>
+        <button type="submit">Создать аккаунт</button>
+      </form>
+    </div>
+    <div id="toast" class="toast"></div>
+  </main>
+
+  <footer class="site-footer"><p>© ВАР RP</p></footer>
+
+  <script type="module">
+    import { app, auth } from './firebase-init.js';
+    import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+    const toast = (m)=>{ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); };
+
+    document.getElementById('login').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value);
+        location.href = './admin.html';
+      } catch (err) { toast('Ошибка входа'); }
+    });
+
+    document.getElementById('register').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try {
+        await createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, document.getElementById('reg-pass').value);
+        toast('Аккаунт создан. Войдите.');
+      } catch (err) { toast('Ошибка регистрации'); }
+    });
+  </script>
+  <script src="./script.js" defer></script>
+</body>
+</html>
+
+
